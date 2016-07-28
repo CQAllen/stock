@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html ng-app="plunker">
+
+<head>
+  <meta charset="utf-8" />
+  <title>AngularJS Plunker</title>
+  <script>document.write('<base href="' + document.location + '" />');</script>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="http://ui-grid.info/release/ui-grid.css" type="text/css">
+  <script src="lib/angular.js"></script>
+  <script src="lib/angular-touch.js"></script>
+  <script src="lib/angular-animate.js"></script>
+  <script src="http://ui-grid.info/docs/grunt-scripts/csv.js"></script>
+  <script src="http://ui-grid.info/docs/grunt-scripts/pdfmake.js"></script>
+  <script src="http://ui-grid.info/docs/grunt-scripts/vfs_fonts.js"></script>
+  <script src="http://ui-grid.info/release/ui-grid.js"></script>
+  <script data-require="jquery@*" data-semver="3.0.0" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.js"></script>
+  <script src="app.js"></script>
+</head>
+
+<body ng-controller="stockController">
+  <div>股票代码      <input type="text" ng-model="stockNr" />
+    <button ng-click="follow()">follow!</button>
+  </div>
+  <div ui-grid="gridOptions" class="grid"></div>
+</body>
+</html>
