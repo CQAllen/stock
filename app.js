@@ -3,36 +3,42 @@ var app = angular.module('plunker', ['ngTouch', 'ui.grid']);
 app.controller('stockController', function($scope,$interval) {
     $scope.stocks = [];
     $scope.stockList = [];
+    $scope.timer;
 
     $scope.follow = function(){
         console.log('stockNr',$scope.stockNr);
         console.log($scope.stockList);
+
         if(contains($scope.stockList,$scope.stockNr)){
             // console.log($scope.stockList);
             alert('你已经添加过该股票了！');
 
         }else{
-
             console.log($scope.stockList);
-            
-
-            $interval(function(){
+            $scope.stockList.push($scope.stockNr);
+            var params = '';
+            for(var i = 0 ; i < $scope.stockList.length ; i++){
+                params += $scope.stockList[i] + ',';
+            }
+            if($scope.timer != null){
+                $interval.cancel($scope.timer);
+            }
+            $scope.timer = $interval(function(){
 
                 jQuery.ajax({
-                    url: "http://qt.gtimg.cn/q="+$scope.stockNr,
+                    url: "http://qt.gtimg.cn/q="+params,
                     dataType: "script",
                     cache: true,
                     success: function(jqXHR, status) {
+                        for(var i = 0 ; i < $scope.stockList.length ; i++){
+                            var data = window['v_'+$scope.stockList[i]];
+                            // console.log(data.split("~"));
+                            $scope.add2Stocks(data.split("~"),$scope.stockList[i]);
+                        }
                         var data = window['v_'+$scope.stockNr];
-                        // console.log(data);
+
                         // console.log(data.split("~"));
-                        $scope.stock = data.split("~");
-                        $scope.add2Stocks($scope.stock);
-
-
-
-
-                        
+                        $scope.add2Stocks(data.split("~"),$scope.stockNr);
                         
                     }
                 });
@@ -42,7 +48,7 @@ app.controller('stockController', function($scope,$interval) {
     console.log($scope.stocks);
 };
 
-$scope.add2Stocks = function(data){
+$scope.add2Stocks = function(data,stockCode){
     var cur_stock = {'未知':data[0],  
          '名字':data[1] , 
          '代码':data[2],  
@@ -92,54 +98,61 @@ $scope.add2Stocks = function(data){
         '市净率' :data[46] ,
         '涨停价' :data[47] ,
         '跌停价':data[48]}
-    if(contains($scope.stockList,$scope.stockNr)){
-        var index = $scope.stockList.indexOf($scope.stockNr);
+    if(contains($scope.stockList,stockCode)){
+        var index = $scope.stockList.indexOf(stockCode);
         // var cdate = new Date().format('yyyy-MM-dd');
         // var cdate = new Date().format('HH:mm:ss');
-        cur_stock['未知'] += cdate;
+        // cur_stock['未知'] += cdate;
         $scope.stocks.splice(index,1,cur_stock);
     }else{
-        $scope.stocks.push(cur_stock);
-        $scope.stockList.push($scope.stockNr);
+        $scope.stocks.push(cur_stock);      
     }
 
 }
 
 $scope.gridOptions = {
     columnDefs: [
-    { name: '未知', field: '未知', width: 200 },
+    { name: '未知', field: '未知', width: 200 ,visible:false},
     { name: '名字', field: '名字', width: 200 },
     { name: '代码', field: '代码', width: 200 },
     { name: '当前价格', field: '当前价格', width: 200 },
     { name: '昨收', field: '昨收', width: 200 },
     { name: '今开', field: '今开', width: 200 },
     { name: '成交量（手）', field: '成交量（手）', width: 200 },
-    { name: '外盘', field: '外盘', width: 200 },
-    { name: '内盘', field: '内盘', width: 200 },
-    { name: '买一', field: '买一', width: 200 },
-    { name: '买一量（手）', field: '买一量（手）', width: 200 },
-    { name: '买二', field: '买二', width: 200 },
-    { name: '买二量（手）', field: '买二量（手）', width: 200 },
-    { name: '买三', field: '买三', width: 200 },
-    { name: '买三量（手）', field: '买三量（手）', width: 200 },
-    { name: '买四', field: '买四', width: 200 },
-    { name: '买四量（手）', field: '买四量（手）', width: 200 },
-    { name: '买五', field: '买五', width: 200 },
-    { name: '买五量（手）', field: '买五量（手）', width: 200 },
-    { name: '卖一', field: '卖一', width: 200 },
-    { name: '卖一量（手）', field: '卖一量（手）', width: 200 },
-    { name: '卖二', field: '卖二', width: 200 },
-    { name: '卖二量（手）', field: '卖二量（手）', width: 200 },
-    { name: '卖三', field: '卖三', width: 200 },
-    { name: '卖三量（手）', field: '卖三量（手）', width: 200 },
-    { name: '卖四', field: '卖四', width: 200 },
-    { name: '卖四量（手）', field: '卖四量（手）', width: 200 },
-    { name: '卖五', field: '卖五', width: 200 },
-    { name: '卖五量（手）', field: '卖五量（手）', width: 200 },
-    { name: '最近逐笔成交', field: '最近逐笔成交', width: 200 },
-    { name: '时间', field: '时间', width: 200 },
+    { name: '外盘', field: '外盘', width: 200 ,visible:false},
+    { name: '内盘', field: '内盘', width: 200 ,visible:false},
+    { name: '买一', field: '买一', width: 200 ,visible:false},
+    { name: '买一量（手）', field: '买一量（手）', width: 200 ,visible:false},
+    { name: '买二', field: '买二', width: 200 ,visible:false},
+    { name: '买二量（手）', field: '买二量（手）', width: 200 ,visible:false},
+    { name: '买三', field: '买三', width: 200 ,visible:false},
+    { name: '买三量（手）', field: '买三量（手）', width: 200 ,visible:false},
+    { name: '买四', field: '买四', width: 200 ,visible:false},
+    { name: '买四量（手）', field: '买四量（手）', width: 200 ,visible:false},
+    { name: '买五', field: '买五', width: 200 ,visible:false},
+    { name: '买五量（手）', field: '买五量（手）', width: 200 ,visible:false},
+    { name: '卖一', field: '卖一', width: 200 ,visible:false},
+    { name: '卖一量（手）', field: '卖一量（手）', width: 200 ,visible:false},
+    { name: '卖二', field: '卖二', width: 200 ,visible:false},
+    { name: '卖二量（手）', field: '卖二量（手）', width: 200 ,visible:false},
+    { name: '卖三', field: '卖三', width: 200 ,visible:false},
+    { name: '卖三量（手）', field: '卖三量（手）', width: 200 ,visible:false},
+    { name: '卖四', field: '卖四', width: 200 ,visible:false},
+    { name: '卖四量（手）', field: '卖四量（手）', width: 200 ,visible:false},
+    { name: '卖五', field: '卖五', width: 200 ,visible:false},
+    { name: '卖五量（手）', field: '卖五量（手）', width: 200 ,visible:false},
+    { name: '最近逐笔成交', field: '最近逐笔成交', width: 200 ,visible:false},
+    { name: '时间', field: '时间', width: 200 ,visible:false},
     { name: '涨跌', field: '涨跌', width: 200 },
-    { name: '涨跌%', field: '涨跌%', width: 200 },
+    { name: '涨跌%', field: '涨跌%', width: 200, cellClass: function(grid, row, col, rowRenderIndex, colRenderIndex) {
+          if (grid.getCellValue(row,col).indexOf("-") >= 0) {
+            return 'green';
+          }
+          else{
+            return 'red';
+          }
+        }
+    },
     { name: '最高', field: '最高', width: 200 },
     { name: '最低', field: '最低', width: 200 },
     { name: '价格/成交量（手）/成交额', field: '价格/成交量（手）/成交额', width: 200 },
