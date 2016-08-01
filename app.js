@@ -1,4 +1,4 @@
-var app = angular.module('plunker', ['ngTouch', 'ui.grid']);
+var app = angular.module('plunker', ['ngAnimate','ngTouch', 'ui.grid']);
 
 app.controller('stockController', function($scope,$interval) {
     $scope.stocks = [];
@@ -143,8 +143,10 @@ $scope.gridOptions = {
     { name: '卖五量（手）', field: '卖五量（手）', width: 200 ,visible:false},
     { name: '最近逐笔成交', field: '最近逐笔成交', width: 200 ,visible:false},
     { name: '时间', field: '时间', width: 200 ,visible:false},
-    { name: '涨跌', field: '涨跌', width: 200 },
+    { name: '涨跌', field: '涨跌', width: 200 , cellClass: 'green' 
+    },
     { name: '涨跌%', field: '涨跌%', width: 200, cellClass: function(grid, row, col, rowRenderIndex, colRenderIndex) {
+        console.log(grid.getCellValue(row,col));
           if (grid.getCellValue(row,col).indexOf("-") >= 0) {
             return 'green';
           }
@@ -174,7 +176,7 @@ $scope.gridOptions = {
 
 $interval(function(){
     $scope.gridOptions.data = $scope.stocks;
-},5000);
+},2000);
 
 function contains(arr, val) {
     if (arr.indexOf(val) !== -1) {
